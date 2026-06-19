@@ -1,8 +1,34 @@
 import time
 import cv2
 from ultralytics import YOLO
+import torch
 
-# Sprint 3 - Adding PIDController class
+print("Initializing AI Vision Engine on Jetson Nano...")
+
+# ================== MODEL SETUP ==================
+# Load once at startup
+model = YOLO('yolo11n.pt')  # We'll optimize to TensorRT later
+
+# ================== CAMERA SETUP (Logitech C920x) ==================
+cap = cv2.VideoCapture(0)  # 0 = default USB camera
+
+# Force 640x480 resolution (good balance for Jetson Nano)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+
+if not cap.isOpened():
+    print("ERROR: Could not open Logitech webcam!")
+    print("Make sure the camera is plugged in and not used by another program.")
+    exit(1)
+
+print("✅ Logitech C920x connected successfully.")
+print("System Operational. Tracking Loop Live.")
+
+# Frame center for 640x480
+FRAME_CENTER_X = 320
+FRAME_CENTER_Y = 240
+
+# ========== PID CONTROLLERS (kept for future) ===========
 class PIDController:
     def __init__(self, kp, ki, kd, max_output=30.0):
         self.kp = kp
@@ -31,61 +57,48 @@ class PIDController:
         i_out = self.ki * self.integral
 
         # 4. Derivative Term (The Brake)
-        derivative = (error - self.prev_error) / dt
-        d_out = self.kd * derivative
+        d_out = self.kd * (error - self.prev_error) / dt
 
         # 5. Total Combined Control Effort
-        total_output = p_out + i_out + d_out
+        output = p_out + i_out + d_out
 
         # 6. SOFTWARE CLAMPING (Safety Cage)
         # Prevents wild mathematical spikes from burning out physical hardware
-        if total_output > self.max_output:
-            total_output = self.max_output
-        elif total_output < -self.max_output:
-            total_output = -self.max_output
+        output = max(-self.max_output, min(self.max_output, output))
 
         # Save states for the next loop iteration
         self.prev_error = error
         self.prev_time = current_time
 
-        return total_output, error
-
-# 1. Initializing / loading the AI Brain called YOLO (You only look once)
-print("Initializing AI Vision Engine...")
-model = YOLO('yolo11n.pt')
-
-# Frame dimensions are 640x480. Dead center is (320, 240)
-FRAME_CENTER_X = 320
-FRAME_CENTER_Y = 240
+        return output, error
 
 # Instantiate independent PID controllers for Pan (Left/Right) and Tilt (Up/Down)
 # Starting with safe, conservative baseline gains based on our tuning analysis
-pan_pid = PIDController(kp=0.08, ki=0.002, kd=0.02, max_output=25.0)
-tilt_pid = PIDController(kp=0.08, ki=0.002, kd=0.02, max_output=25.0)
+pan_pid = PIDController(kp=0.12, ki=0.001, kd=0.08, max_output=25.0)
+tilt_pid = PIDController(kp=0.12, ki=0.001, kd=0.08, max_output=25.0)
 
-# 2. Connect to my phone's camera stream
-stream_url = 'http://192.168.1.231:4747/video' 
-cap = cv2.VideoCapture(stream_url)
-
-print("System Operational. Tracking Loop Live.")
 
 while True:
     # Grab the current frame from the camera
     success, frame = cap.read()
     if not success:
-        print("Failed to connect to the camera stream.")
-        break
+        print("Warning: Failed to grab frame. Retrying...")
+        time.sleep(0.1)
+        continue
 
-    # 3. Feed the frame into the AI (confidence threshold set to 45%)
+    # Feed the frame into the AI (confidence threshold set to 45%)
     # stream=True optimizes memory by not storing historical frames
-    results = model(frame, stream=True, conf=0.45)
+    # Running YOLO inference (Jetson-friendly setting)
+    results = model(frame, stream=True, conf=0.45, verbose=False)
 
     # Track only the primary detected target per frame to avoid multi-target confusion
     target_found = False
     target_x, target_y = FRAME_CENTER_X, FRAME_CENTER_Y
     target_name = "SEARCHING"
 
-    # 4. Extract the data and draw the bounding boxes
+    annotated_frame = None
+
+    # Extract the data and draw the bounding boxes
     for r in results:
         # Use Ultralytics built-in tool to draw boxes on the frame
         annotated_frame = r.plot()
@@ -102,23 +115,20 @@ while True:
                 target_found = True
 
     # --- THE HARDWARE ABSTRACTION LAYER (HAL) ---
-    # We pass the current AI target position vs where we want it to be (the center)
-    pan_effort, pan_error = pan_pid.calculate(current_pos=target_x, target_pos=FRAME_CENTER_X)
-    tilt_effort, tilt_error = tilt_pid.calculate(current_pos=target_y, target_pos=FRAME_CENTER_Y)
+    # Calculate PID efforts (for future hardware)
+    pan_effort, pan_error = pan_pid.calculate(target_x, FRAME_CENTER_X)
+    tilt_effort, tilt_error = tilt_pid.calculate(target_y, FRAME_CENTER_Y)
 
-    if target_found:
-        print(f"TRACKING: {target_name} | "
-              f"ErrorX: {pan_error:4d} px -> Pan Command: {pan_effort:+.2f}°/s | "
-              f"ErrorY: {tilt_error:4d} px -> Tilt Command: {tilt_effort:+.2f}°/s")
-    else:
-        print("STATUS: Airspace Clear - Sweeping Passive Scanning Pattern...")
+    status = f"TRACKING {target_name}" if target_found else "SCANNING"
+    print(f"{status} | Pan: {pan_effort:+.1f} Tilt: {tilt_effort:+.1f} | FPS ~ live")
 
-    # Draw tracking crosshairs on your display interface
-    cv2.circle(annotated_frame, (FRAME_CENTER_X, FRAME_CENTER_Y), 10, (0, 0, 255), 2)
-    cv2.imshow('Tactical Edge Vision System', annotated_frame)
+    # Display
+    if annotated_frame is not None:
+        cv2.circle(annotated_frame, (FRAME_CENTER_X, FRAME_CENTER_Y), 12, (0, 0, 255), 2)
+        cv2.imshow('Edge Vision Engine - Jetson', annotated_frame)
 
-    # 6. Safety switch to break the loop if you press 'q'
-    #time.sleep(0.5) # pauses the loop for half second (slow down to 2 frames/sec) to read terminal for debugging
+    # Safety switch to break the loop if you press 'q'
+    # time.sleep(0.5) # pauses the loop for half second (slow down to 2 frames/sec) to read terminal for debugging
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
