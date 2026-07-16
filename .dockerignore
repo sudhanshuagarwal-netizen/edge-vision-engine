@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+*.md
+*.mov
+*.mp4
+.env
+.DS_Store

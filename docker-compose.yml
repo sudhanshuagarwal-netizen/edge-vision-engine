@@ -1,0 +1,16 @@
+services:
+  vision:
+    build: .
+    image: edge-vision-engine:latest
+    container_name: tactical-vision
+    network_mode: host
+    devices:
+      - /dev/video0:/dev/video0
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - VIDEO_SOURCE=${VIDEO_SOURCE:-0}
+      - CONF_THRESHOLD=0.45
+    stdin_open: true
+    tty: true
