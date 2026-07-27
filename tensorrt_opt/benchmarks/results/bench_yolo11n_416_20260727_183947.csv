@@ -1,0 +1,2 @@
+timestamp,model,source,imgsz,conf,frames,mean_latency_ms,median_latency_ms,p95_latency_ms,avg_fps,avg_power_w,avg_gpu_temp_c
+20260727_183947,models/yolo11n.pt,videos/Benchmarking-video.mp4,416,0.25,387,39.615,39.474,40.313,25.243,,
