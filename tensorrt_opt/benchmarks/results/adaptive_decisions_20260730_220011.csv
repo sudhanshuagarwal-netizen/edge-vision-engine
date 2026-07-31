@@ -1,0 +1,2 @@
+t,action,reason,avg_temp,avg_latency
+1785463183.0852087,SKIP every 2,temp 50.0°C ≥ 50.0°C,50.0,26.8

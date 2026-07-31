@@ -1,0 +1,34 @@
+t,action,reason,avg_temp,avg_latency
+1785447334.3951666,SKIP every 2,latency 3239.2ms ≥ 28.0ms,48.3,3239.2
+1785447334.9772313,FULL rate,conditions improved,48.0,14.2
+1785447335.5541244,SKIP every 2,latency 29.4ms ≥ 28.0ms,48.1,29.4
+1785447335.7762191,FULL rate,conditions improved,48.1,27.3
+1785447336.363379,SKIP every 2,latency 30.7ms ≥ 28.0ms,48.1,30.7
+1785447336.855641,FULL rate,conditions improved,48.2,27.3
+1785447346.0668864,SKIP every 2,latency 29.6ms ≥ 28.0ms,48.7,29.6
+1785447346.1059086,FULL rate,conditions improved,48.7,27.0
+1785447346.1975894,SKIP every 2,latency 29.5ms ≥ 28.0ms,48.7,29.5
+1785447346.2391472,FULL rate,conditions improved,48.7,26.8
+1785447346.3207493,SKIP every 2,latency 28.4ms ≥ 28.0ms,48.8,28.4
+1785447346.3694248,FULL rate,conditions improved,48.8,25.7
+1785447346.4740937,SKIP every 2,latency 28.8ms ≥ 28.0ms,48.8,28.8
+1785447346.5227778,FULL rate,conditions improved,48.8,26.1
+1785447346.9414873,SKIP every 2,latency 28.5ms ≥ 28.0ms,48.8,28.5
+1785447347.139975,FULL rate,conditions improved,48.7,25.5
+1785447347.2584608,SKIP every 2,latency 30.9ms ≥ 28.0ms,48.7,30.9
+1785447347.5176516,FULL rate,conditions improved,48.7,27.9
+1785447347.6013916,SKIP every 2,latency 29.6ms ≥ 28.0ms,48.7,29.6
+1785447347.6399307,FULL rate,conditions improved,48.7,26.4
+1785447347.7828777,SKIP every 2,latency 28.8ms ≥ 28.0ms,48.7,28.8
+1785447347.8925986,FULL rate,conditions improved,48.7,23.7
+1785447348.518681,SKIP every 2,latency 28.1ms ≥ 28.0ms,48.7,28.1
+1785447348.6347787,FULL rate,conditions improved,48.7,27.2
+1785447349.2409272,SKIP every 2,latency 28.4ms ≥ 28.0ms,48.8,28.4
+1785447349.353621,FULL rate,conditions improved,48.8,25.6
+1785447375.0623226,SKIP every 2,latency 29.9ms ≥ 28.0ms,49.5,29.9
+1785447375.1024628,FULL rate,conditions improved,49.4,27.2
+1785447375.1763635,SKIP every 2,latency 28.1ms ≥ 28.0ms,49.4,28.1
+1785447375.214714,FULL rate,conditions improved,49.4,25.4
+1785447375.9092162,SKIP every 2,latency 30.4ms ≥ 28.0ms,49.3,30.4
+1785447376.0268939,FULL rate,conditions improved,49.3,27.0
+1785447376.10641,SKIP every 2,latency 28.3ms ≥ 28.0ms,49.3,28.3
