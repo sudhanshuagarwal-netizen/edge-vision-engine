@@ -1,0 +1,2 @@
+t,action,reason,avg_temp,avg_latency
+1785690701.6553183,SKIP every 2,latency 42.1ms ≥ 40.0ms,50.6,42.1
