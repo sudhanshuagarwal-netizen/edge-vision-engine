@@ -1,0 +1,3 @@
+t,action,reason,avg_temp,avg_latency
+1785639424.1000981,SKIP every 2,latency 49.2ms ≥ 40.0ms,50.5,49.2
+1785639424.523269,FULL rate,temp 50.5°C ≤ 50.5°C and latency 31.8ms ≤ 32.0ms,50.5,31.8

@@ -1,0 +1,8 @@
+Phase 3 Orbital Simulation — SUNLIGHT
+Runtime: 30.1s
+Processed: 416/443 (93.9%)
+Mean power: 9.11 W
+Dets kept/seen: 380/1337
+Discard reasons — low_score: 957, top_n: 0, bandwidth: 0
+Keyframes sent: 13
+Bandwidth sent: 2180.0 KB

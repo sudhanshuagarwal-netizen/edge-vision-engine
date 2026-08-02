@@ -1,0 +1,8 @@
+Phase 3 Orbital Simulation — ECLIPSE
+Runtime: 30.1s
+Processed: 394/447 (88.1%)
+Mean power: 6.82 W
+Dets kept/seen: 26/1200
+Discard reasons — low_score: 1173, top_n: 0, bandwidth: 1
+Keyframes sent: 9
+Bandwidth sent: 798.0 KB
